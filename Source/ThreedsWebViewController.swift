@@ -137,20 +137,25 @@ public class ThreedsWebViewController: UIViewController,
     private func shouldDismiss(absoluteUrl: URL) {
         // get URL conforming to RFC 1808 without the query
         let url = "\(absoluteUrl.scheme ?? "https")://\(absoluteUrl.host ?? "localhost")\(absoluteUrl.path)"
-
+        
         if url.contains(successUrl) {
-            
-            let token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-payment-token")
+            var token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-session-id")
+            if token?.isEmpty == true || token == nil {
+                token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-payment-token")
+            }
             // success url, dismissing the page with the payment token
             self.dismiss(animated: true) {
                 self.delegate?.onSuccess3D(token: token ?? "")
-            //self.navigationController?.popViewController(animated: true)
-
+                //self.navigationController?.popViewController(animated: true)
+                
             }
         } else if url.contains(failUrl) {
             // fail url, dismissing the page
-            let token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-payment-token")
-
+            var token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-session-id")
+            if token?.isEmpty == true || token == nil {
+                token = getQueryStringParameter(url: absoluteUrl.absoluteString, param: "cko-payment-token")
+            }
+            
             self.dismiss(animated: true) {
                 self.delegate?.onFailure3D(token: token ?? "")
             }
